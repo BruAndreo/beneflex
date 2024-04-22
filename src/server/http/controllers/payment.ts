@@ -35,5 +35,5 @@ const transactionScheme = object({
     created: date().default(() => new Date())
 });
 
-type IntentTransaction = InferType<typeof transactionScheme>;
+export type IntentTransaction = InferType<typeof transactionScheme>;
 
