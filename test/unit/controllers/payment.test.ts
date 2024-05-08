@@ -45,6 +45,6 @@ describe("Payment Controller", () => {
         const response = await controller.payTransaction(mockRequest(headers, transactionNotOk), mockResponse());
 
         expect(response.status).toHaveBeenCalledWith(400);
-        expect(response.json).toHaveBeenCalledWith({"message": "Transaction is not ok"});
+        expect(response.json).toHaveBeenCalledWith({"message": "Transaction is not valid"});
     });
 });
