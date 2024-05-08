@@ -1,13 +1,23 @@
 import { Router } from "express";
 import PaymentController from "./controllers/payment";
 
-const routes = Router();
-const paymentController = new PaymentController();
+export default class RouterManager {
 
-routes.get("/health", (req, res) => res.status(200).json({"status": "OK"}));
+    private routes: Router
+    private paymentController: PaymentController
 
-routes.post("/payment", paymentController.payTransaction);
+    constructor(paymentController: PaymentController) {
+        this.routes = Router();
+        this.paymentController = paymentController;
+    }
 
-routes.use((req, res) => res.status(404).json({"error": "not found"}))
+    public getRoutes(): Router {
+        this.routes.get("/health", (req, res) => res.status(200).json({"status": "OK"}));
 
-export default routes;
+        this.routes.post("/payment", this.paymentController.payTransaction);
+
+        this.routes.use((req, res) => res.status(404).json({"error": "not found"}));
+        
+        return this.routes;
+    }
+}

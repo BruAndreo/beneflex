@@ -1,28 +1,19 @@
 
 import {Request, Response} from "express"
-import { number, object, string, date, InferType } from "yup";
-import TransactionNotOk from "../../../exceptions/transactionNotOk";
+import { number, object, string, date, InferType, ValidationError } from "yup";
 
 export default class PaymentController {
 
     public async payTransaction(req: Request, res: Response): Promise<Response> {
         try {
-            const IntentTransaction = await this.createIntentTransaction(req.body);
+            transactionScheme.validateSync(req.body);
             return res.status(200).json({status: "paid"});
         } catch (e: any) {
-            if (e instanceof TransactionNotOk) {
-                return res.status(e.statusCode).json({message: "Transaction is not ok"});
+            if (e instanceof ValidationError) {
+                return res.status(400).json({message: "Transaction is not valid"});
             }
 
             return res.status(500).json({message: "internal server error"});
-        }
-    }
-
-    private async createIntentTransaction(obj: any): Promise<IntentTransaction> {
-        try {
-            return await transactionScheme.validate(obj);
-        } catch (e: any) {
-            throw new TransactionNotOk(e.message);
         }
     }
 }
@@ -35,5 +26,4 @@ const transactionScheme = object({
     created: date().default(() => new Date())
 });
 
-type IntentTransaction = InferType<typeof transactionScheme>;
-
+export type IntentTransaction = InferType<typeof transactionScheme>;
